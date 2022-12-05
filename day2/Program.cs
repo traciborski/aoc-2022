@@ -1,6 +1,6 @@
 ﻿internal class Program
 {
-    private static async Task Main(string[] args)
+    private static async Task Main()
     {
         var lines = await File.ReadAllLinesAsync("input");
         //var sum1 = 0;
