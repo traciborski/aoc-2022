@@ -40,28 +40,27 @@ for (int y = 0; y < size; y++)
     for (int x = 0; x < size; x++)
         v[y, x] = v_b[y, x] * v_t[y, x] * v_r[y, x] * v_l[y, x];
 
+// maximum
 var max = 0;
 for (int y = 0; y < size; y++)
     for (int x = 0; x < size; x++)
         if (v[y, x] > max) max = v[y, x];
-
 Console.WriteLine("2: " + max);
 
 int Visibility((int y, int x) to, (int y, int x) from)
 {
     var increment_y = Increment(from.y, to.y);
     var increment_x = Increment(from.x, to.x);
-
-    var y = from.y + increment_y;
-    var x = from.x + increment_x;
+    var y = from.y;
+    var x = from.x;
     var sum = 0;
     while (y != to.y || x != to.x)
     {
-        if (heights[y, x] >= heights[from.y, from.x]) break;
-
-        sum++;
         y += increment_y;
         x += increment_x;
+        sum++;
+        if (heights[y, x] >= heights[from.y, from.x])
+            break;
     }
     return sum;
 }
