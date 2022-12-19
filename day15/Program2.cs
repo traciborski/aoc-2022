@@ -29,7 +29,7 @@ for (int y = 0; y <= map.Count; y++)
     {
         if (map[y][x].from > r)
         {
-            Console.WriteLine(4_000_000 * (map[y][x].from - 1) + y);
+            Console.WriteLine(4_000_000L * (map[y][x].from - 1) + y);
             return;
         }
         else
