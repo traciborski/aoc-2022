@@ -29,10 +29,8 @@ int CountEmptyTiles()
 (int min_y, int max_y, int min_x, int max_x, int elfes) MinMax()
 {
     int min_y = Y, max_y = 0, min_x = X, max_x = 0, elfes = 0;
-
     for (int y = 0; y < Y; y++)
         for (int x = 0; x < X; x++)
-        {
             if (board[y, x] == ELF)
             {
                 elfes++;
@@ -41,8 +39,6 @@ int CountEmptyTiles()
                 min_y = Math.Min(min_y, y);
                 max_y = Math.Max(max_y, y);
             }
-        }
-
     return (min_y, max_y, min_x, max_x, elfes);
 }
 
@@ -65,8 +61,8 @@ IEnumerable<(int y, int x, int dy, int dx)> Propose(int round)
         {
             if (board[y, x] != ELF) continue;
 
-            if (Free2(y, x, 0, -1) && Free2(y, x, -1, -1) && Free2(y, x, -1, 0) && Free2(y, x, -1, 1) &&
-                Free2(y, x, 0, 1) && Free2(y, x, 1, 1) && Free2(y, x, 1, 0) && Free2(y, x, 1, -1))
+            if (Free(y, x, 0, -1) && Free(y, x, -1, -1) && Free(y, x, -1, 0) && Free(y, x, -1, 1) &&
+                Free(y, x, 0, 1) && Free(y, x, 1, 1) && Free(y, x, 1, 0) && Free(y, x, 1, -1))
                 yield return (y, x, 0, 0);
             else if (GetCondition(round % 4, y, x))
                 yield return GetConditionValue(round % 4, y, x);
@@ -111,15 +107,6 @@ bool Free(int y, int x, int dy, int dx)
     if (x2 >= X) return true;
     return board[y2, x2] != ELF;
 }
-bool Free2(int y, int x, int dy, int dx)
-{
-    var y2 = y + dy; var x2 = x + dx;
-    if (y2 < 0) return true;
-    if (x2 < 0) return true;
-    if (y2 >= Y) return true;
-    if (x2 >= X) return true;
-    return board[y2, x2] != ELF;
-}
 bool MoveAll((int y, int x, int dy, int dx)[] moves)
 {
     var changed = false;
@@ -142,12 +129,12 @@ bool MoveAll((int y, int x, int dy, int dx)[] moves)
     return changed;
 }
 
-(char[,], int, int) NewBoard(IEnumerable<(int y, int x, int dy, int dx)> moves)
+(char[,], int, int) NewBoard((int y, int x, int dy, int dx)[] moves)
 {
     var y_min = Math.Min(0, moves.Select(m => m.y + m.dy).Min());
     var x_min = Math.Min(0, moves.Select(m => m.x + m.dx).Min());
-    var y_max = Math.Max(Y, moves.Select(m => m.y + m.dy).Max());
-    var x_max = Math.Max(X, moves.Select(m => m.x + m.dx).Max());
+    var y_max = Math.Max(Y - 1, moves.Select(m => m.y + m.dy).Max());
+    var x_max = Math.Max(X - 1, moves.Select(m => m.x + m.dx).Max());
     X = x_max - x_min + 1;
     Y = y_max - y_min + 1;
     return (new char[Y, X], Math.Abs(y_min), Math.Abs(x_min));
@@ -157,7 +144,7 @@ bool MoveAll((int y, int x, int dy, int dx)[] moves)
 {
     return (p.y + p.dy, p.x + p.dx);
 }
-bool IsValid((int y_to, int x_to) position, IEnumerable<(int y, int x, int dy, int dx)> propositions)
+bool IsValid((int y_to, int x_to) position, (int y, int x, int dy, int dx)[] propositions)
 {
     var taken = false;
     foreach (var p in propositions)
